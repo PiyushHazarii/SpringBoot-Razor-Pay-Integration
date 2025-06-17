@@ -1,1 +1,9 @@
+# Ignore everything
 /*
+
+# But NOT src folder
+!/src/
+
+# Also include .gitignore itself
+!/.gitignore
+
