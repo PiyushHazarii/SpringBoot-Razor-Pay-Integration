@@ -1,9 +1,14 @@
-# Ignore everything
+# Ignore everything by default
 /*
 
 # But NOT src folder
 !/src/
 
-# Also include .gitignore itself
+# Allow .gitignore itself
 !/.gitignore
 
+# Explicitly ignore Maven wrapper files
+mvnw
+mvnw.cmd
+.mvn/
+.gitattributes
