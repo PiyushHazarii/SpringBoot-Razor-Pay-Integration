@@ -1,0 +1,70 @@
+<!-- Razorpay Button -->
+<button id="pay-button">Pay with UPI</button>
+
+<!-- Razorpay Checkout Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    document.getElementById('pay-button').onclick = function () {
+        fetch('http://localhost:8080/pay', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                amount: 5000, // ₹10
+                currency: 'INR',
+                receiptId: 'receipt123'
+            })
+        })
+        .then(response => response.json())
+        .then(order => {
+            const options = {
+                key: "rzp_test_VGejkMoqdNrb8S", // Replace with your Razorpay key
+                amount: order.amount,
+                currency: order.currency,
+                name: "Pogli",
+                description: "Pay via UPI or Card",
+                order_id: order.id,
+                handler: function (response) {
+                    alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+
+                    // Save to backend
+                    fetch('http://localhost:8080/api/payment/save-payment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            orderId: response.razorpay_order_id,
+                            paymentId: response.razorpay_payment_id,
+                            signature: response.razorpay_signature
+                        })
+                    })
+                    .then(res => res.text())
+                    .then(msg => console.log("Saved response:", msg));
+                },
+                prefill: {
+                    name: "Piyush Hazari",
+                    email: "piyush@example.com",
+                    contact: "8340207707"
+                },
+                method: {
+                    upi: true,          // ✅ Must be true
+                    card: true,
+                    netbanking: true,
+                    wallet: true,
+                    emi: true,
+                    paylater: false     // Optional: hide pay later
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+        })
+        .catch(err => console.error("Error during payment:", err));
+    };
+</script>
